@@ -55,6 +55,16 @@ public class ObjectsManager : MonoBehaviour
                 selected--;
                 DisableExcept(selected, objectsDisplay);
             }
+
+            if(Input.GetMouseButtonDown(0))
+            {
+                Transform tempTransform = GameObject.FindGameObjectWithTag("Player").transform;
+                Mesh tempMesh = tempTransform.GetComponent<MeshFilter>().mesh;
+
+                tempTransform.GetComponent<MeshFilter>().mesh = objects[selected].GetComponent<MeshFilter>().mesh;
+
+                tempTransform.GetComponent<PlayerController>().shapeShifted = true;
+            }
         }
         else
         {

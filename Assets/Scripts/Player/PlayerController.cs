@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5.0f;
     public float sensitivity = 5.0f;
     public float xClamp = 60.0f;
+    public float camLerpSpeed = 5.0f;
 
     public float playerInteractDistance = 2.0f;
 
@@ -14,6 +15,11 @@ public class PlayerController : MonoBehaviour
     public bool shapeShifted = false;
 
     public GameObject objectsPanel;
+
+    public Vector3 thirdPersonViewPos;
+    public Vector3 thirdPersonViewRot;
+
+    private Vector3 CameraDefaultPos;
 
     private Vector3 movement;
 
@@ -26,7 +32,11 @@ public class PlayerController : MonoBehaviour
         Cursor.visible = false;
 
         objManager = objectsPanel.GetComponent<ObjectsManager>();
-	}
+
+        CameraDefaultPos = Camera.main.transform.position;
+
+        Camera.main.GetComponent<ThirdPersonCamera>().enabled = false;
+    }
 	
 	void Update ()
     {
@@ -50,6 +60,18 @@ public class PlayerController : MonoBehaviour
             CharacterController controller = GetComponent<CharacterController>();
 
             controller.SimpleMove(movement);
+        }
+        else
+        {
+            if (Vector3.Distance(Camera.main.transform.position, thirdPersonViewPos) > 0.5f)
+            {
+                Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, thirdPersonViewPos, camLerpSpeed * Time.deltaTime);
+                Camera.main.transform.rotation = Quaternion.Lerp(Quaternion.Euler(Camera.main.transform.rotation.eulerAngles), Quaternion.Euler(thirdPersonViewRot), camLerpSpeed * Time.deltaTime);
+            }
+            else
+            {
+                Camera.main.GetComponent<ThirdPersonCamera>().enabled = true;
+            }
         }
 
         RaycastHit hit;
