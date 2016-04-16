@@ -33,7 +33,9 @@ public class PlayerController : MonoBehaviour
 
 	private Vector3 originalCamPosition;
 
+    private bool lerping = false;
 
+    private float lerpSmooth = 0.0f;
 
 	void Start ()
     {
@@ -74,33 +76,51 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-			shapeShiftExplainText.SetActive(true);
-			objManager.activated = false;
-            if (Vector3.Distance(Camera.main.transform.position, transform.position + thirdPersonViewPos) > 0.01f)
+            if(!lerping)
             {
-                Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, transform.position + thirdPersonViewPos, camLerpSpeed * Time.deltaTime);
-                Camera.main.transform.rotation = Quaternion.Lerp(Quaternion.Euler(Camera.main.transform.rotation.eulerAngles), Quaternion.Euler(thirdPersonViewRot), camLerpSpeed * Time.deltaTime);
+                shapeShiftExplainText.SetActive(true);
+                objManager.activated = false;
+                if (Vector3.Distance(Camera.main.transform.position, transform.position + thirdPersonViewPos) > 0.01f)
+                {
+                    Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, transform.position + thirdPersonViewPos, camLerpSpeed * lerpSmooth);
+                    Camera.main.transform.rotation = Quaternion.Lerp(Quaternion.Euler(Camera.main.transform.rotation.eulerAngles), Quaternion.Euler(thirdPersonViewRot), camLerpSpeed * lerpSmooth);
+                    lerpSmooth += Time.deltaTime;
+                }
+                else
+                {
+                    lerpSmooth = 0.0f;
+                    Camera.main.GetComponent<ThirdPersonCamera>().enabled = true;
+                }
+            }
+
+			if(Input.GetKeyDown(KeyCode.Space) || lerping)
+            {
+                Camera.main.GetComponent<ThirdPersonCamera>().enabled = false;
+
+                lerping = true;
+
+				Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition, originalCamPosition, camLerpSpeed * lerpSmooth);
+				Camera.main.transform.rotation = Quaternion.Lerp(Quaternion.Euler(Camera.main.transform.rotation.eulerAngles), Quaternion.Euler(18.5f, 0.0f, 0.0f), camLerpSpeed * lerpSmooth);
+
+                lerpSmooth += Time.deltaTime;
+
+                if (Vector3.Distance(Camera.main.transform.localPosition, originalCamPosition) < 0.01f)
+                {
+                    lerpSmooth = 0.0f;
+
+                    Camera.main.transform.localPosition = originalCamPosition;
+                    Camera.main.transform.rotation = Quaternion.Euler(Vector3.zero);
+
+                    GetComponent<MeshFilter>().mesh = defaultMesh;
+
+                    shapeShifted = false;
+
+                    lerping = false;
+                }
             }
             else
             {
-                Camera.main.GetComponent<ThirdPersonCamera>().enabled = true;
-            }
 
-			if(Input.GetKeyDown(KeyCode.Space))
-            {
-				Camera.main.transform.localPosition = originalCamPosition;
-				Camera.main.transform.rotation = Quaternion.Euler(Vector3.zero);
-                shapeShifted = false;
-
-                Camera.main.GetComponent<ThirdPersonCamera>().enabled = false;
-
-                GetComponent<MeshFilter>().mesh = defaultMesh;
-
-                if (Vector3.Distance(Camera.main.transform.position, transform.position + new Vector3(0.0f, 0.5f, 0.1f)) > 0.01f)
-                {
-                    Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, transform.position + new Vector3(0.0f, 0.5f, 0.1f), camLerpSpeed * Time.deltaTime);
-                    Camera.main.transform.rotation = Quaternion.Lerp(Quaternion.Euler(Camera.main.transform.rotation.eulerAngles), Quaternion.Euler(0.0f, 0.0f, 0.0f), camLerpSpeed * Time.deltaTime);
-                }
             }
         }
 

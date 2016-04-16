@@ -60,7 +60,15 @@ public class ObjectsManager : MonoBehaviour
             if(Input.GetMouseButtonDown(0))
             {
                 Transform tempTransform = GameObject.FindGameObjectWithTag("Player").transform;
-                Mesh tempMesh = tempTransform.GetComponent<MeshFilter>().mesh;
+
+                if(tempTransform.GetComponent<MeshFilter>() == null)
+                {
+                    Mesh tempMesh = tempTransform.GetChild(0).transform.GetComponent<MeshFilter>().mesh;
+                }
+                else
+                {
+                    Mesh tempMesh = tempTransform.GetComponent<MeshFilter>().mesh;
+                }
 
 				if(objects[selected] != null)
 				{
@@ -76,7 +84,7 @@ public class ObjectsManager : MonoBehaviour
             transform.GetChild(0).GetComponent<Image>().sprite = openHandle;
         }
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.Space) && !GameObject.FindGameObjectWithTag("Player").transform.GetComponent<PlayerController>().shapeShifted)
         {
             if(activated)
             {
