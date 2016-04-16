@@ -13,23 +13,29 @@ public class ObjectsManager : MonoBehaviour
     public Sprite closeHandle;
 
     private int selected = 0;
+    
+    private List<Transform> objectsDisplay;
 
-    private List<Transform> objects;
+    private List<GameObject> objects;
 
     private RectTransform panelRect;
+
+    private int nbObjects = 0;
     
 	void Start ()
     {
-        objects = new List<Transform>();
+        objectsDisplay = new List<Transform>();
+
+        objects = new List<GameObject>();
 
         panelRect = GetComponent<RectTransform>();
 
 	    for(int i = 1; i < transform.childCount; i++)
         {
-            objects.Add(transform.GetChild(i));
+            objectsDisplay.Add(transform.GetChild(i));
         }
 
-        DisableExcept(0, objects);
+        DisableExcept(0, objectsDisplay);
 	}
 	
 	void Update ()
@@ -39,15 +45,15 @@ public class ObjectsManager : MonoBehaviour
             panelRect.anchoredPosition = Vector2.Lerp(panelRect.anchoredPosition , new Vector2(- 80.0f, 0.0f), lerpSpeed * Time.deltaTime);
             transform.GetChild(0).GetComponent<Image>().sprite = closeHandle;
 
-            if (Input.GetAxis("Mouse ScrollWheel") < 0 && selected < objects.Count - 1)
+            if (Input.GetAxis("Mouse ScrollWheel") < 0 && selected < objectsDisplay.Count - 1)
             {
                 selected++;
-                DisableExcept(selected, objects);
+                DisableExcept(selected, objectsDisplay);
             }
             else if (Input.GetAxis("Mouse ScrollWheel") > 0 && selected > 0)
             {
                 selected--;
-                DisableExcept(selected, objects);
+                DisableExcept(selected, objectsDisplay);
             }
         }
         else
@@ -66,6 +72,36 @@ public class ObjectsManager : MonoBehaviour
             {
                 activated = true;
             }
+        }
+    }
+
+    public void AddObject(GameObject prefab, Sprite icon)
+    {
+        for(int i = 0; i < objects.Count; i++)
+        {
+            if(prefab == objects[i])
+            {
+                Debug.Log("Item already in the list");
+                return;
+            }
+        }
+
+        if(nbObjects < 5)
+        {
+            objectsDisplay[nbObjects].GetComponent<Image>().sprite = icon;
+            objects.Add(prefab);
+            nbObjects++;
+        }
+        else
+        {
+            for(int i = objects.Count - 1; i >= 1; i--)
+            {
+                objects[i] = objects[i - 1];
+                objectsDisplay[i].GetComponent<Image>().sprite = objectsDisplay[i - 1].GetComponent<Image>().sprite;
+            }
+
+            objectsDisplay[0].GetComponent<Image>().sprite = icon;
+            objects[0] = prefab;
         }
     }
 

@@ -7,17 +7,25 @@ public class PlayerController : MonoBehaviour
     public float sensitivity = 5.0f;
     public float xClamp = 60.0f;
 
+    public float playerInteractDistance = 2.0f;
+
     public Texture crossHair;
 
     public bool shapeShifted = false;
+
+    public GameObject objectsPanel;
 
     private Vector3 movement;
 
     private float xRotation = 0.0f;
 
+    private ObjectsManager objManager;
+
 	void Start ()
     {
         Cursor.visible = false;
+
+        objManager = objectsPanel.GetComponent<ObjectsManager>();
 	}
 	
 	void Update ()
@@ -44,7 +52,26 @@ public class PlayerController : MonoBehaviour
             controller.SimpleMove(movement);
         }
 
-        if(Input.GetKeyDown(KeyCode.Escape))
+        RaycastHit hit;
+
+        int x = Screen.width / 2;
+        int y = Screen.height / 2;
+
+        Ray ray = Camera.main.ScreenPointToRay(new Vector3(x, y));
+
+        if(Physics.Raycast(ray, out hit))
+        {
+            if(hit.distance < playerInteractDistance && hit.transform.gameObject.tag == "Furniture")
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    Furniture furn = hit.transform.GetComponent<Furniture>().AddFurniture();
+                    objManager.AddObject(furn.model, furn.icon);
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
             Cursor.visible = true;
     }
 
