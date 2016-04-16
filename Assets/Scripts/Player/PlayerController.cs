@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     public float xClamp = 60.0f;
     public float camLerpSpeed = 5.0f;
 
+
     public float playerInteractDistance = 2.0f;
 
     public Texture crossHair;
@@ -19,7 +20,10 @@ public class PlayerController : MonoBehaviour
     public Vector3 thirdPersonViewPos;
     public Vector3 thirdPersonViewRot;
 
+	public GameObject shapeShiftExplainText;
+
     private Vector3 movement;
+
 
     private float xRotation = 0.0f;
 
@@ -27,8 +31,14 @@ public class PlayerController : MonoBehaviour
 
     private Mesh defaultMesh;
 
+	private Vector3 originalCamPosition;
+
+
+
 	void Start ()
     {
+		originalCamPosition = Camera.main.transform.localPosition;
+
         Cursor.visible = false;
 
         objManager = objectsPanel.GetComponent<ObjectsManager>();
@@ -42,6 +52,7 @@ public class PlayerController : MonoBehaviour
     {
         if(!shapeShifted)
         {
+			shapeShiftExplainText.SetActive(false);
             float yRotation = Input.GetAxis("Mouse X") * sensitivity;
 
             transform.Rotate(0.0f, yRotation, 0.0f);
@@ -63,6 +74,8 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+			shapeShiftExplainText.SetActive(true);
+			objManager.activated = false;
             if (Vector3.Distance(Camera.main.transform.position, transform.position + thirdPersonViewPos) > 0.01f)
             {
                 Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, transform.position + thirdPersonViewPos, camLerpSpeed * Time.deltaTime);
@@ -73,8 +86,10 @@ public class PlayerController : MonoBehaviour
                 Camera.main.GetComponent<ThirdPersonCamera>().enabled = true;
             }
 
-            if(Input.GetKeyDown(KeyCode.Space))
+			if(Input.GetKeyDown(KeyCode.Space))
             {
+				Camera.main.transform.localPosition = originalCamPosition;
+				Camera.main.transform.rotation = Quaternion.Euler(Vector3.zero);
                 shapeShifted = false;
 
                 Camera.main.GetComponent<ThirdPersonCamera>().enabled = false;
@@ -96,9 +111,9 @@ public class PlayerController : MonoBehaviour
 
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(x, y));
 
-        if(Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit))
         {
-            if(hit.distance < playerInteractDistance && hit.transform.gameObject.tag == "Furniture")
+            if (hit.distance < playerInteractDistance && hit.transform.gameObject.tag == "Furniture" && !objManager.activated)
             {
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -106,10 +121,18 @@ public class PlayerController : MonoBehaviour
                     objManager.AddObject(furn.model, furn.icon);
                 }
             }
+            if (hit.distance < playerInteractDistance && hit.transform.gameObject.tag == "Interactable")
+            {
+                if (hit.transform.gameObject.GetComponent<InteractableHighlight>() != null)
+                {
+                    hit.transform.gameObject.GetComponent<InteractableHighlight>().Hover();
+                }
+            }
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+		if (Input.GetKeyDown(KeyCode.Escape))
             Cursor.visible = true;
+
     }
 
     void OnGUI()

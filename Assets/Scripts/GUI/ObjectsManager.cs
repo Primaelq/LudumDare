@@ -33,6 +33,7 @@ public class ObjectsManager : MonoBehaviour
 	    for(int i = 1; i < transform.childCount; i++)
         {
             objectsDisplay.Add(transform.GetChild(i));
+			objects.Add(null);
         }
 
         DisableExcept(0, objectsDisplay);
@@ -61,9 +62,12 @@ public class ObjectsManager : MonoBehaviour
                 Transform tempTransform = GameObject.FindGameObjectWithTag("Player").transform;
                 Mesh tempMesh = tempTransform.GetComponent<MeshFilter>().mesh;
 
-                tempTransform.GetComponent<MeshFilter>().mesh = objects[selected].GetComponent<MeshFilter>().mesh;
+				if(objects[selected] != null)
+				{
+	                tempTransform.GetComponent<MeshFilter>().mesh = objects[selected].GetComponent<MeshFilter>().mesh;
 
-                tempTransform.GetComponent<PlayerController>().shapeShifted = true;
+	                tempTransform.GetComponent<PlayerController>().shapeShifted = true;
+				}
             }
         }
         else
@@ -98,14 +102,15 @@ public class ObjectsManager : MonoBehaviour
 
         if(nbObjects < 5)
         {
-            objectsDisplay[nbObjects].GetComponent<Image>().sprite = icon;
-            objects.Add(prefab);
+            objectsDisplay[selected].GetComponent<Image>().sprite = icon;
+			objects[selected] = prefab;
             nbObjects++;
         }
         else
         {
             for(int i = objects.Count - 1; i >= 1; i--)
             {
+				Debug.Log("I made it");
                 objects[i] = objects[i - 1];
                 objectsDisplay[i].GetComponent<Image>().sprite = objectsDisplay[i - 1].GetComponent<Image>().sprite;
             }
