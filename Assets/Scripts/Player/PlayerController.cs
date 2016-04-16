@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour
     public float sensitivity = 5.0f;
     public float xClamp = 60.0f;
 
+    public Texture crossHair;
+
     public bool shapeShifted = false;
 
     private Vector3 movement;
@@ -44,5 +46,12 @@ public class PlayerController : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.Escape))
             Cursor.visible = true;
+    }
+
+    void OnGUI()
+    {
+        float xMin = (Screen.width / 2) - (crossHair.width / 2);
+        float yMin = (Screen.height / 2) - (crossHair.height / 2);
+        GUI.DrawTexture(new Rect(xMin, yMin, crossHair.width, crossHair.height), crossHair);
     }
 }
