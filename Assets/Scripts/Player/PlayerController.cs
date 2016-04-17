@@ -140,9 +140,9 @@ public class PlayerController : MonoBehaviour
             }
             if (hit.distance < playerInteractDistance && hit.transform.gameObject.tag == "Interactable")
             {
-                if (hit.transform.gameObject.GetComponent<InteractableHighlight>() != null)
+                if(Input.GetMouseButtonDown(0))
                 {
-                    hit.transform.gameObject.GetComponent<InteractableHighlight>().Hover();
+                    hit.transform.gameObject.GetComponent<Interactable>().Interact();
                 }
             }
         }
