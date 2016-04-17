@@ -32,12 +32,15 @@ public class ThirdPersonCamera : MonoBehaviour
 
             Ray ray = new Ray(transform.position, GameObject.FindGameObjectWithTag("FurnitureShape").transform.position - transform.position);
 
+            Debug.DrawRay(transform.position, GameObject.FindGameObjectWithTag("FurnitureShape").transform.position - transform.position, Color.red);
+
             if (Physics.Raycast(ray, out hit))
             {
+                Debug.Log(hit.transform.name);
+
                 if (hit.collider.transform.tag != "FurnitureShape")
                 {
-                    Material startMat = hit.collider.transform.GetComponent<Renderer>().material;
-                    startMat.color = new Color(startMat.color.r, startMat.color.g, startMat.color.b, 0.5f);
+                    transform.Translate(Vector3.forward * 0.1f);
                 }
             }
         }
