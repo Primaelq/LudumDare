@@ -113,7 +113,15 @@ public class AI : MonoBehaviour
         if(Time.time - timer < endurance)
         {
             navMeshAgent.speed = runSpeed;
-            navMeshAgent.SetDestination(GameObject.FindWithTag("Player").transform.position);
+
+            if(GameObject.FindWithTag("Player") != null)
+            {
+                navMeshAgent.SetDestination(GameObject.FindWithTag("Player").transform.position);
+            }
+            else
+            {
+                ReturnToPatrol();
+            }
 
             if(Vector3.Distance(transform.position, GameObject.FindWithTag("Player").transform.position) < 1.25f)
             {
