@@ -17,7 +17,7 @@ public class AI : MonoBehaviour
 
     public int edgeResolveIteration = 5;
 
-    public float viewAngle = 90.0f, drawResolution = 2.0f;
+    public float viewAngle = 90.0f, drawResolution = 2.0f, edgeDistanceThreshold;
 
     public float runSpeed = 3.0f, endurance = 5.0f, waitTime = 2.0f;
 
@@ -155,7 +155,9 @@ public class AI : MonoBehaviour
 
             if(i > 0)
             {
-                if(oldViewCast.hit != newViewCast.hit)
+                bool edgeDistanceThresholdExceeded = Mathf.Abs(oldViewCast.distance - newViewCast.distance) > edgeDistanceThreshold;
+
+                if(oldViewCast.hit != newViewCast.hit || (oldViewCast.hit && newViewCast.hit && edgeDistanceThresholdExceeded))
                 {
                     EdgeInfo edge = FindEdge(oldViewCast, newViewCast);
 
@@ -210,7 +212,9 @@ public class AI : MonoBehaviour
             float angle = (minAngle + maxAngle) / 2;
             ViewCastInfo newViewCast = ViewCast(angle);
 
-            if(newViewCast.hit == minViewCast.hit)
+            bool edgeDistanceThresholdExceeded = Mathf.Abs(minViewCast.distance - newViewCast.distance) > edgeDistanceThreshold;
+
+            if (newViewCast.hit == minViewCast.hit && !edgeDistanceThresholdExceeded)
             {
                 minAngle = angle;
                 minPoint = newViewCast.point;
