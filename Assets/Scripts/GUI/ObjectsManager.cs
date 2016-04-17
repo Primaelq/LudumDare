@@ -21,6 +21,8 @@ public class ObjectsManager : MonoBehaviour
     private RectTransform panelRect;
 
     private int nbObjects = 0;
+
+    private GameObject tempShape;
     
 	void Start ()
     {
@@ -29,6 +31,9 @@ public class ObjectsManager : MonoBehaviour
         objects = new List<GameObject>();
 
         panelRect = GetComponent<RectTransform>();
+
+        tempShape = new GameObject();
+        tempShape.SetActive(false);
 
 	    for(int i = 1; i < transform.childCount; i++)
         {
@@ -61,18 +66,16 @@ public class ObjectsManager : MonoBehaviour
             {
                 Transform tempTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
-                if(tempTransform.GetComponent<MeshFilter>() == null)
-                {
-                    Mesh tempMesh = tempTransform.GetChild(0).transform.GetComponent<MeshFilter>().mesh;
-                }
-                else
-                {
-                    Mesh tempMesh = tempTransform.GetComponent<MeshFilter>().mesh;
-                }
-
 				if(objects[selected] != null)
 				{
-	                tempTransform.GetComponent<MeshFilter>().mesh = objects[selected].GetComponent<MeshFilter>().mesh;
+                    tempTransform.GetComponent<MeshRenderer>().enabled = false;
+
+                    Quaternion rotation = Quaternion.Euler(objects[selected].transform.GetComponent<Furniture>().rotationModifier.x, GameObject.FindGameObjectWithTag("Player").transform.rotation.eulerAngles.y, objects[selected].transform.GetComponent<Furniture>().rotationModifier.z);
+
+                    GameObject.FindGameObjectWithTag("Player").transform.tag = "FurnitureShape";
+
+                    tempShape.SetActive(true);
+                    tempShape = Instantiate(objects[selected], tempTransform.position, rotation) as GameObject;
 
 	                tempTransform.GetComponent<PlayerController>().shapeShifted = true;
 				}
@@ -84,7 +87,7 @@ public class ObjectsManager : MonoBehaviour
             transform.GetChild(0).GetComponent<Image>().sprite = openHandle;
         }
 
-        if(Input.GetKeyDown(KeyCode.Space) && !GameObject.FindGameObjectWithTag("Player").transform.GetComponent<PlayerController>().shapeShifted)
+        if(Input.GetKeyDown(KeyCode.Space) && GameObject.FindGameObjectWithTag("Player") != null)
         {
             if(activated)
             {
@@ -94,6 +97,13 @@ public class ObjectsManager : MonoBehaviour
             {
                 activated = true;
             }
+        }
+
+        if(GameObject.FindGameObjectWithTag("FurnitureShape") != null && !GameObject.FindGameObjectWithTag("FurnitureShape").transform.GetComponent<PlayerController>().shapeShifted && tempShape.activeSelf)
+        {
+            GameObject.FindGameObjectWithTag("FurnitureShape").transform.tag = "Player";
+            tempShape.SetActive(false);
+            tempShape = new GameObject();
         }
     }
 

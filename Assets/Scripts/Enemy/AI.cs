@@ -101,6 +101,11 @@ public class AI : MonoBehaviour
                 currentTarget++;
             }
         }
+
+        if(navMeshAgent.velocity.x < navMeshAgent.speed / 5 && navMeshAgent.velocity.z < navMeshAgent.speed / 5)
+        {
+            ReturnToPatrol();
+        }
     }
 
     void Chase()

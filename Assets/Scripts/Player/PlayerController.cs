@@ -80,10 +80,12 @@ public class PlayerController : MonoBehaviour
             {
                 //shapeShiftExplainText.SetActive(true);
                 objManager.activated = false;
+                
                 if (Vector3.Distance(Camera.main.transform.position, transform.position + thirdPersonViewPos) > 0.01f)
                 {
                     Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, transform.position + thirdPersonViewPos, camLerpSpeed * lerpSmooth);
-                    Camera.main.transform.rotation = Quaternion.Lerp(Quaternion.Euler(Camera.main.transform.rotation.eulerAngles), Quaternion.Euler(thirdPersonViewRot), camLerpSpeed * lerpSmooth);
+                    //Camera.main.transform.rotation = Quaternion.Lerp(Quaternion.Euler(Camera.main.transform.rotation.eulerAngles), Quaternion.Euler(thirdPersonViewRot), camLerpSpeed * lerpSmooth);
+                    Camera.main.transform.LookAt(transform.position);
                     lerpSmooth += Time.deltaTime;
                 }
                 else
@@ -111,7 +113,7 @@ public class PlayerController : MonoBehaviour
                     Camera.main.transform.localPosition = originalCamPosition;
                     Camera.main.transform.rotation = Quaternion.Euler(Vector3.zero);
 
-                    GetComponent<MeshFilter>().mesh = defaultMesh;
+                    GetComponent<MeshRenderer>().enabled = true;
 
                     shapeShifted = false;
 
