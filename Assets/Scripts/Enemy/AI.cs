@@ -52,19 +52,22 @@ public class AI : MonoBehaviour
 	
 	void Update ()
     {
-	    switch(state)
+        if(GameObject.FindGameObjectWithTag("Player") != null && !GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().openingSafe)
         {
-            case State.Idle:
-                Idle();
-                break;
+            switch (state)
+            {
+                case State.Idle:
+                    Idle();
+                    break;
 
-            case State.Patrol:
-                Patrol();
-                break;
+                case State.Patrol:
+                    Patrol();
+                    break;
 
-            case State.Chase:
-                Chase();
-                break;
+                case State.Chase:
+                    Chase();
+                    break;
+            }
         }
 	}
 

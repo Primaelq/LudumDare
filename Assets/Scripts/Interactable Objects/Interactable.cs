@@ -6,14 +6,14 @@ public class Interactable : MonoBehaviour
     public enum Type
     {
         Door,
-        lightSwitch
+        LightSwitch,
     }
 
     public Type type;
 
     public bool stateON = false;
 
-    public Light light;
+    public Light[] lights;
 
     public void Interact()
     {
@@ -23,7 +23,8 @@ public class Interactable : MonoBehaviour
                 OpenCloseDoor();
                 break;
 
-            case Type.lightSwitch:
+            case Type.LightSwitch:
+                TurnLightOnOff();
                 break;
         }
     }
@@ -46,12 +47,18 @@ public class Interactable : MonoBehaviour
     {
         if(stateON)
         {
-            light.enabled = false;
+            for(int i = 0; i < lights.Length; i++)
+            {
+                lights[i].enabled = false;
+            }
             stateON = false;
         }
         else
         {
-            light.enabled = true;
+            for (int i = 0; i < lights.Length; i++)
+            {
+                lights[i].enabled = true;
+            }
             stateON = true;
         }
     }

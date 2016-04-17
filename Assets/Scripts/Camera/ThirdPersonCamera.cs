@@ -36,11 +36,10 @@ public class ThirdPersonCamera : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {
-                Debug.Log(hit.transform.name);
-
                 if (hit.collider.transform.tag != "FurnitureShape")
                 {
-                    transform.Translate(Vector3.forward * 0.1f);
+                    Debug.Log("Ohoh");
+                    //transform.localPosition = Vector3.Lerp(transform.position, transform.parent.transform.position, Time.deltaTime);
                 }
             }
         }

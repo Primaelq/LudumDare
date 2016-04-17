@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour
@@ -8,22 +9,22 @@ public class PlayerController : MonoBehaviour
     public float xClamp = 60.0f;
     public float camLerpSpeed = 5.0f;
 
-
     public float playerInteractDistance = 2.0f;
 
     public Texture crossHair;
 
     public bool shapeShifted = false;
 
-    public GameObject objectsPanel;
+    public GameObject objectsPanel, safePanel;
 
     public Vector3 thirdPersonViewPos;
     public Vector3 thirdPersonViewRot;
 
-	//public GameObject shapeShiftExplainText;
+    //public GameObject shapeShiftExplainText;
+
+    public string password;
 
     private Vector3 movement;
-
 
     private float xRotation = 0.0f;
 
@@ -35,10 +36,15 @@ public class PlayerController : MonoBehaviour
 
     private bool lerping = false;
 
+    [HideInInspector]
+    public bool openingSafe = false;
+
     private float lerpSmooth = 0.0f;
 
 	void Start ()
     {
+        safePanel.SetActive(false);
+
 		originalCamPosition = Camera.main.transform.localPosition;
 
         Cursor.visible = false;
@@ -50,75 +56,79 @@ public class PlayerController : MonoBehaviour
 	
 	void Update ()
     {
-        if(!shapeShifted)
+        if(!openingSafe)
         {
-			//shapeShiftExplainText.SetActive(false);
-            float yRotation = Input.GetAxis("Mouse X") * sensitivity;
-
-            transform.Rotate(0.0f, yRotation, 0.0f);
-
-            xRotation -= Input.GetAxis("Mouse Y") * sensitivity;
-            xRotation = Mathf.Clamp(xRotation, -xClamp, xClamp);
-
-            Camera.main.transform.localRotation = Quaternion.Euler(xRotation, 0.0f, 0.0f);
-
-            movement.z = Input.GetAxis("Vertical") * moveSpeed;
-            movement.x = Input.GetAxis("Horizontal") * moveSpeed;
-            movement.y = 0.0f;
-
-            movement = transform.rotation * movement;
-
-            CharacterController controller = GetComponent<CharacterController>();
-
-            controller.SimpleMove(movement);
-        }
-        else
-        {
-            if(!lerping)
+            if (!shapeShifted)
             {
-                //shapeShiftExplainText.SetActive(true);
-                objManager.activated = false;
-                
-                if (Vector3.Distance(Camera.main.transform.position, transform.position + thirdPersonViewPos) > 0.01f)
+                //shapeShiftExplainText.SetActive(false);
+                float yRotation = Input.GetAxis("Mouse X") * sensitivity;
+
+                transform.Rotate(0.0f, yRotation, 0.0f);
+
+                xRotation -= Input.GetAxis("Mouse Y") * sensitivity;
+                xRotation = Mathf.Clamp(xRotation, -xClamp, xClamp);
+
+                Camera.main.transform.localRotation = Quaternion.Euler(xRotation, 0.0f, 0.0f);
+
+                movement.z = Input.GetAxis("Vertical") * moveSpeed;
+                movement.x = Input.GetAxis("Horizontal") * moveSpeed;
+                movement.y = 0.0f;
+
+                movement = transform.rotation * movement;
+
+                CharacterController controller = GetComponent<CharacterController>();
+
+                controller.SimpleMove(movement);
+            }
+            else
+            {
+                if (!lerping)
                 {
-                    Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, transform.position + thirdPersonViewPos, camLerpSpeed * lerpSmooth);
-                    //Camera.main.transform.rotation = Quaternion.Lerp(Quaternion.Euler(Camera.main.transform.rotation.eulerAngles), Quaternion.Euler(thirdPersonViewRot), camLerpSpeed * lerpSmooth);
-                    Camera.main.transform.LookAt(transform.position);
+                    //shapeShiftExplainText.SetActive(true);
+                    objManager.activated = false;
+
+                    if (Vector3.Distance(Camera.main.transform.position, transform.position + thirdPersonViewPos) > 0.01f)
+                    {
+                        Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, transform.position + thirdPersonViewPos, camLerpSpeed * lerpSmooth);
+                        //Camera.main.transform.rotation = Quaternion.Lerp(Quaternion.Euler(Camera.main.transform.rotation.eulerAngles), Quaternion.Euler(thirdPersonViewRot), camLerpSpeed * lerpSmooth);
+                        Camera.main.transform.LookAt(transform.position);
+                        lerpSmooth += Time.deltaTime;
+                    }
+                    else if (!Camera.main.GetComponent<ThirdPersonCamera>().active)
+                    {
+                        lerpSmooth = 0.0f;
+                        Camera.main.GetComponent<ThirdPersonCamera>().SetNewRotation();
+                        Camera.main.GetComponent<ThirdPersonCamera>().active = true;
+                    }
+                }
+
+                if (Input.GetKeyDown(KeyCode.Space) || lerping)
+                {
+                    Camera.main.GetComponent<ThirdPersonCamera>().active = false;
+
+                    lerping = true;
+
+                    Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition, originalCamPosition, camLerpSpeed * lerpSmooth);
+                    Camera.main.transform.rotation = Quaternion.Lerp(Quaternion.Euler(Camera.main.transform.rotation.eulerAngles), Quaternion.Euler(18.5f, 0.0f, 0.0f), camLerpSpeed * lerpSmooth);
+
                     lerpSmooth += Time.deltaTime;
-                }
-                else if(!Camera.main.GetComponent<ThirdPersonCamera>().active)
-                {
-                    lerpSmooth = 0.0f;
-                    Camera.main.GetComponent<ThirdPersonCamera>().SetNewRotation();
-                    Camera.main.GetComponent<ThirdPersonCamera>().active = true;
-                }
-            }
 
-			if(Input.GetKeyDown(KeyCode.Space) || lerping)
-            {
-                Camera.main.GetComponent<ThirdPersonCamera>().active = false;
+                    if (Vector3.Distance(Camera.main.transform.localPosition, originalCamPosition) < 0.01f)
+                    {
+                        lerpSmooth = 0.0f;
 
-                lerping = true;
+                        Camera.main.transform.localPosition = originalCamPosition;
+                        Camera.main.transform.rotation = Quaternion.Euler(Vector3.zero);
 
-				Camera.main.transform.localPosition = Vector3.Lerp(Camera.main.transform.localPosition, originalCamPosition, camLerpSpeed * lerpSmooth);
-				Camera.main.transform.rotation = Quaternion.Lerp(Quaternion.Euler(Camera.main.transform.rotation.eulerAngles), Quaternion.Euler(18.5f, 0.0f, 0.0f), camLerpSpeed * lerpSmooth);
+                        GetComponent<MeshRenderer>().enabled = true;
 
-                lerpSmooth += Time.deltaTime;
+                        shapeShifted = false;
 
-                if (Vector3.Distance(Camera.main.transform.localPosition, originalCamPosition) < 0.01f)
-                {
-                    lerpSmooth = 0.0f;
-
-                    Camera.main.transform.localPosition = originalCamPosition;
-                    Camera.main.transform.rotation = Quaternion.Euler(Vector3.zero);
-
-                    GetComponent<MeshRenderer>().enabled = true;
-
-                    shapeShifted = false;
-
-                    lerping = false;
+                        lerping = false;
+                    }
                 }
             }
+        
         }
 
         RaycastHit hit;
@@ -138,11 +148,22 @@ public class PlayerController : MonoBehaviour
                     objManager.AddObject(furn.model, furn.icon);
                 }
             }
+
             if (hit.distance < playerInteractDistance && hit.transform.gameObject.tag == "Interactable")
             {
                 if(Input.GetMouseButtonDown(0))
                 {
                     hit.transform.gameObject.GetComponent<Interactable>().Interact();
+                }
+            }
+
+            if (hit.distance < playerInteractDistance && hit.transform.gameObject.tag == "Safe")
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    Time.timeScale = 0.0f;
+                    OpenSafe();
+                    openingSafe = true;
                 }
             }
         }
@@ -152,10 +173,34 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    void OpenSafe()
+    {
+        Cursor.visible = true;
+        safePanel.SetActive(true);
+    }
+
+    public void Submit()
+    {
+        if(safePanel.transform.GetChild(0).transform.GetComponent<InputField>().text == password)
+        {
+            Debug.Log("You won");
+        }
+    }
+
+    public void Exit()
+    {
+        openingSafe = false;
+        safePanel.SetActive(false);
+        Cursor.visible = false;
+    }
+
     void OnGUI()
     {
-        float xMin = (Screen.width / 2) - (crossHair.width / 2);
-        float yMin = (Screen.height / 2) - (crossHair.height / 2);
-        GUI.DrawTexture(new Rect(xMin, yMin, crossHair.width, crossHair.height), crossHair);
+        if(!openingSafe)
+        {
+            float xMin = (Screen.width / 2) - (crossHair.width / 2);
+            float yMin = (Screen.height / 2) - (crossHair.height / 2);
+            GUI.DrawTexture(new Rect(xMin, yMin, crossHair.width, crossHair.height), crossHair);
+        }
     }
 }
