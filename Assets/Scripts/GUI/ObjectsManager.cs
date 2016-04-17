@@ -12,11 +12,13 @@ public class ObjectsManager : MonoBehaviour
     public Sprite openHandle;
     public Sprite closeHandle;
 
-    private int selected = 0;
+    [HideInInspector]
+    public int selected = 0;
     
     private List<Transform> objectsDisplay;
 
-    private List<GameObject> objects;
+    [HideInInspector]
+    public List<GameObject> objects;
 
     private RectTransform panelRect;
 
@@ -66,7 +68,9 @@ public class ObjectsManager : MonoBehaviour
             {
                 Transform tempTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
-				if(objects[selected] != null)
+                Vector3 tempPosition = tempTransform.position + objects[selected].transform.GetComponent<Furniture>().positionModifier;
+
+                if (objects[selected] != null)
 				{
                     tempTransform.GetComponent<MeshRenderer>().enabled = false;
 
@@ -75,7 +79,7 @@ public class ObjectsManager : MonoBehaviour
                     GameObject.FindGameObjectWithTag("Player").transform.tag = "FurnitureShape";
 
                     tempShape.SetActive(true);
-                    tempShape = Instantiate(objects[selected], tempTransform.position, rotation) as GameObject;
+                    tempShape = Instantiate(objects[selected], tempPosition, rotation) as GameObject;
 
 	                tempTransform.GetComponent<PlayerController>().shapeShifted = true;
 				}

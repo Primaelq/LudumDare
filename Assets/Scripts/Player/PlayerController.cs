@@ -30,8 +30,6 @@ public class PlayerController : MonoBehaviour
 
     private ObjectsManager objManager;
 
-    private Mesh defaultMesh;
-
 	private Vector3 originalCamPosition;
 
     private bool lerping = false;
@@ -41,9 +39,11 @@ public class PlayerController : MonoBehaviour
 
     private float lerpSmooth = 0.0f;
 
+    private NavMeshObstacle navMeshObstacle;
+
 	void Start ()
     {
-        safePanel.SetActive(false);
+        //safePanel.SetActive(false);
 
 		originalCamPosition = Camera.main.transform.localPosition;
 
@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
 
         objManager = objectsPanel.GetComponent<ObjectsManager>();
 
-        defaultMesh = GetComponent<MeshFilter>().mesh;
+        navMeshObstacle = GetComponent<NavMeshObstacle>();
     }
 	
 	void Update ()
@@ -60,6 +60,7 @@ public class PlayerController : MonoBehaviour
         {
             if (!shapeShifted)
             {
+                //navMeshObstacle.carving = true;
                 //shapeShiftExplainText.SetActive(false);
                 float yRotation = Input.GetAxis("Mouse X") * sensitivity;
 
@@ -82,6 +83,9 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                navMeshObstacle.size = objManager.objects[objManager.selected].GetComponent<Collider>().bounds.size;
+                navMeshObstacle.carving = true;
+
                 if (!lerping)
                 {
                     //shapeShiftExplainText.SetActive(true);
@@ -161,7 +165,6 @@ public class PlayerController : MonoBehaviour
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    Time.timeScale = 0.0f;
                     OpenSafe();
                     openingSafe = true;
                 }
