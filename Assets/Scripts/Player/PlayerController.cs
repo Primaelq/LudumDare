@@ -46,8 +46,6 @@ public class PlayerController : MonoBehaviour
         objManager = objectsPanel.GetComponent<ObjectsManager>();
 
         defaultMesh = GetComponent<MeshFilter>().mesh;
-
-        Camera.main.GetComponent<ThirdPersonCamera>().enabled = false;
     }
 	
 	void Update ()
@@ -88,16 +86,17 @@ public class PlayerController : MonoBehaviour
                     Camera.main.transform.LookAt(transform.position);
                     lerpSmooth += Time.deltaTime;
                 }
-                else
+                else if(!Camera.main.GetComponent<ThirdPersonCamera>().active)
                 {
                     lerpSmooth = 0.0f;
-                    Camera.main.GetComponent<ThirdPersonCamera>().enabled = true;
+                    Camera.main.GetComponent<ThirdPersonCamera>().SetNewRotation();
+                    Camera.main.GetComponent<ThirdPersonCamera>().active = true;
                 }
             }
 
 			if(Input.GetKeyDown(KeyCode.Space) || lerping)
             {
-                Camera.main.GetComponent<ThirdPersonCamera>().enabled = false;
+                Camera.main.GetComponent<ThirdPersonCamera>().active = false;
 
                 lerping = true;
 
@@ -119,10 +118,6 @@ public class PlayerController : MonoBehaviour
 
                     lerping = false;
                 }
-            }
-            else
-            {
-
             }
         }
 

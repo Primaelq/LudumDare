@@ -103,6 +103,7 @@ public class ObjectsManager : MonoBehaviour
         {
             GameObject.FindGameObjectWithTag("FurnitureShape").transform.tag = "Player";
             tempShape.SetActive(false);
+            Destroy(tempShape);
             tempShape = new GameObject();
         }
     }

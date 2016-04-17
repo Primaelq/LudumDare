@@ -90,7 +90,7 @@ public class AI : MonoBehaviour
 
         navMeshAgent.SetDestination(patrolPoints[currentTarget].position);
 
-        if(Vector3.Distance(transform.position, patrolPoints[currentTarget].position) < 0.5f)
+        if(Vector3.Distance(transform.position, patrolPoints[currentTarget].position) < 0.25f)
         {
             if(currentTarget == patrolPoints.Length - 1)
             {
@@ -102,10 +102,10 @@ public class AI : MonoBehaviour
             }
         }
 
-        if(navMeshAgent.velocity.x < navMeshAgent.speed / 5 && navMeshAgent.velocity.z < navMeshAgent.speed / 5)
+        /*if(navMeshAgent.velocity.x < navMeshAgent.speed / 5 && navMeshAgent.velocity.z < navMeshAgent.speed / 5)
         {
             ReturnToPatrol();
-        }
+        }*/
     }
 
     void Chase()
@@ -247,13 +247,13 @@ public class AI : MonoBehaviour
         Vector3 direction = DirFromAngle(gloablAngle, true);
         RaycastHit hit;
 
-        if(Physics.Raycast(transform.position, direction, out hit, distCollider.radius, obstacleMask))
+        if(Physics.Raycast(transform.position, direction, out hit, distCollider.radius * transform.localScale.y, obstacleMask))
         {
             return new ViewCastInfo(true, hit.point, hit.distance, gloablAngle);
         }
         else
         {
-            return new ViewCastInfo(false, transform.position + direction * distCollider.radius, distCollider.radius, gloablAngle);
+            return new ViewCastInfo(false, transform.position + direction * distCollider.radius * transform.localScale.y, distCollider.radius * transform.localScale.y, gloablAngle);
         }
     }
 
@@ -306,7 +306,7 @@ public class AI : MonoBehaviour
             {
                 RaycastHit hit;
 
-                if(Physics.Raycast(transform.position, deltaPosition.normalized, out hit, distCollider.radius))
+                if(Physics.Raycast(transform.position, deltaPosition.normalized, out hit, distCollider.radius * transform.localScale.y))
                 {
                     if(hit.collider.gameObject.tag == "Player")
                     {

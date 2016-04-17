@@ -9,34 +9,44 @@ public class ThirdPersonCamera : MonoBehaviour
     private float xRotation;
     private float yRotation;
 
+    [HideInInspector]
+    public bool active = false;
+
     void Start ()
     {
-        transform.LookAt(transform.parent.transform.position);
-        xRotation = transform.rotation.eulerAngles.x;
-        yRotation = transform.rotation.eulerAngles.y;
-        Debug.Log(xRotation);
+
 	}
 	
 	void Update ()
     {
-        yRotation += Input.GetAxis("Mouse X") * sensitivity;
-
-        xRotation -= Input.GetAxis("Mouse Y") * sensitivity;
-        xRotation = Mathf.Clamp(xRotation, 0.0f, xClamp);
-
-        transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0.0f);
-
-        RaycastHit hit;
-
-        Ray ray = new Ray(transform.position, GameObject.FindGameObjectWithTag("FurnitureShape").transform.position - transform.position);
-
-        if(Physics.Raycast(ray, out hit))
+        if(active)
         {
-            if(hit.collider.transform.tag != "FurnitureShape")
+            yRotation += Input.GetAxis("Mouse X") * sensitivity;
+
+            xRotation -= Input.GetAxis("Mouse Y") * sensitivity;
+            xRotation = Mathf.Clamp(xRotation, 0.0f, xClamp);
+
+            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0.0f);
+
+            RaycastHit hit;
+
+            Ray ray = new Ray(transform.position, GameObject.FindGameObjectWithTag("FurnitureShape").transform.position - transform.position);
+
+            if (Physics.Raycast(ray, out hit))
             {
-                Material startMat = hit.collider.transform.GetComponent<Renderer>().material;
-                startMat.color = new Color(startMat.color.r, startMat.color.g, startMat.color.b, 0.5f);
+                if (hit.collider.transform.tag != "FurnitureShape")
+                {
+                    Material startMat = hit.collider.transform.GetComponent<Renderer>().material;
+                    startMat.color = new Color(startMat.color.r, startMat.color.g, startMat.color.b, 0.5f);
+                }
             }
         }
+    }
+
+    public void SetNewRotation()
+    {
+        transform.LookAt(transform.parent.transform.position);
+        xRotation = transform.rotation.eulerAngles.x;
+        yRotation = transform.rotation.eulerAngles.y;
     }
 }
