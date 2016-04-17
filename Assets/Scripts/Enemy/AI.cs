@@ -90,7 +90,7 @@ public class AI : MonoBehaviour
 
         navMeshAgent.SetDestination(patrolPoints[currentTarget].position);
 
-        if(Vector3.Distance(transform.position, patrolPoints[currentTarget].position) < 0.25f)
+        if(Vector3.Distance(transform.position, patrolPoints[currentTarget].position) < 0.25f || navMeshAgent.velocity == Vector3.zero)
         {
             if(currentTarget == patrolPoints.Length - 1)
             {
@@ -101,11 +101,6 @@ public class AI : MonoBehaviour
                 currentTarget++;
             }
         }
-
-        /*if(navMeshAgent.velocity.x < navMeshAgent.speed / 5 && navMeshAgent.velocity.z < navMeshAgent.speed / 5)
-        {
-            ReturnToPatrol();
-        }*/
     }
 
     void Chase()
