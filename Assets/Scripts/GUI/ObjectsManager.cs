@@ -24,7 +24,7 @@ public class ObjectsManager : MonoBehaviour
 
     private int nbObjects = 0;
 
-    private GameObject tempShape;
+    public GameObject tempShape;
     
 	void Start ()
     {
@@ -34,8 +34,8 @@ public class ObjectsManager : MonoBehaviour
 
         panelRect = GetComponent<RectTransform>();
 
-        tempShape = new GameObject();
-        tempShape.SetActive(false);
+        //tempShape = new GameObject();
+        //tempShape.SetActive(false);
 
 	    for(int i = 1; i < transform.childCount; i++)
         {
@@ -66,23 +66,27 @@ public class ObjectsManager : MonoBehaviour
 
             if(Input.GetMouseButtonDown(0))
             {
-                Transform tempTransform = GameObject.FindGameObjectWithTag("Player").transform;
-
-                Vector3 tempPosition = tempTransform.position + objects[selected].transform.GetComponent<Furniture>().positionModifier;
 
                 if (objects[selected] != null)
-				{
+                {
+                    Transform tempTransform = GameObject.FindGameObjectWithTag("Player").transform;
+                    Debug.Log(objects[selected].name+"1");
+                    Vector3 tempPosition = tempTransform.position + objects[selected].transform.GetComponent<Furniture>().positionModifier;
+                    Debug.Log(objects[selected].name + "2");
                     tempTransform.GetComponent<MeshRenderer>().enabled = false;
-
+                    Debug.Log(objects[selected].name + "3");
                     Quaternion rotation = Quaternion.Euler(objects[selected].transform.GetComponent<Furniture>().rotationModifier.x, GameObject.FindGameObjectWithTag("Player").transform.rotation.eulerAngles.y, objects[selected].transform.GetComponent<Furniture>().rotationModifier.z);
-
+                    Debug.Log(objects[selected].name + "4");
                     GameObject.FindGameObjectWithTag("Player").transform.tag = "FurnitureShape";
-
-                    tempShape.SetActive(true);
+                    Debug.Log(objects[selected].name + "5");
+                    //tempShape.SetActive(true);
                     tempShape = Instantiate(objects[selected], tempPosition, rotation) as GameObject;
-
-	                tempTransform.GetComponent<PlayerController>().shapeShifted = true;
-				}
+                    tempShape.tag = "fml";
+                    Debug.Log(objects[selected].name + "6");
+                    tempTransform.GetComponent<PlayerController>().shapeShifted = true;
+                }
+                else
+                    Debug.Log("Object null");
             }
         }
         else
@@ -106,9 +110,12 @@ public class ObjectsManager : MonoBehaviour
         if(GameObject.FindGameObjectWithTag("FurnitureShape") != null && !GameObject.FindGameObjectWithTag("FurnitureShape").transform.GetComponent<PlayerController>().shapeShifted && tempShape.activeSelf)
         {
             GameObject.FindGameObjectWithTag("FurnitureShape").transform.tag = "Player";
-            tempShape.SetActive(false);
+           //objects[selected] = tempShape.GetComponent<Furniture>().model;
+            //tempShape.SetActive(false);
             Destroy(tempShape);
-            tempShape = new GameObject();
+            tempShape = null;
+            Debug.Log(objects[selected] == null);
+            // tempShape = new GameObject();
         }
     }
 
@@ -123,11 +130,20 @@ public class ObjectsManager : MonoBehaviour
             }
         }
 
-        if(nbObjects < 5)
+        for (int i = 0; i < objects.Count; i++)
+        {
+            if ( objects[i] != null && prefab.name == objects[i].name)
+            {
+                Debug.Log("Item already in the list");
+                return;
+            }
+        }
+
+        if (nbObjects < 5)
         {
             objectsDisplay[selected].GetComponent<Image>().sprite = icon;
 			objects[selected] = prefab;
-            nbObjects++;
+            //nbObjects++;
         }
         else
         {

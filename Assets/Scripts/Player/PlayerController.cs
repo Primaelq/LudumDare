@@ -149,7 +149,8 @@ public class PlayerController : MonoBehaviour
                 if (Input.GetMouseButtonDown(0))
                 {
                     Furniture furn = hit.transform.GetComponent<Furniture>().AddFurniture();
-                    objManager.AddObject(furn.model, furn.icon);
+                    if (furn != null) 
+                        objManager.AddObject(furn.model, furn.icon);
                 }
             }
 
