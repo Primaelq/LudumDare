@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     public Vector3 thirdPersonViewPos;
     public Vector3 thirdPersonViewRot;
 
-	public GameObject shapeShiftExplainText;
+	//public GameObject shapeShiftExplainText;
 
     private Vector3 movement;
 
@@ -54,7 +54,7 @@ public class PlayerController : MonoBehaviour
     {
         if(!shapeShifted)
         {
-			shapeShiftExplainText.SetActive(false);
+			//shapeShiftExplainText.SetActive(false);
             float yRotation = Input.GetAxis("Mouse X") * sensitivity;
 
             transform.Rotate(0.0f, yRotation, 0.0f);
@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour
         {
             if(!lerping)
             {
-                shapeShiftExplainText.SetActive(true);
+                //shapeShiftExplainText.SetActive(true);
                 objManager.activated = false;
                 if (Vector3.Distance(Camera.main.transform.position, transform.position + thirdPersonViewPos) > 0.01f)
                 {
