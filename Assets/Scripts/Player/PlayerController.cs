@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
 
     public bool shapeShifted = false;
 
-    public GameObject objectsPanel, safePanel, deathPanel;
+    public GameObject objectsPanel, safePanel, deathPanel, transitionPanel;
 
     public string[] deathStrings;
 
@@ -70,6 +70,7 @@ public class PlayerController : MonoBehaviour
 
         deathText = deathPanel.transform.GetChild(0).GetComponent<Text>();
         deathPanel.SetActive(false);
+        transitionPanel.SetActive(false);
     }
 	
     public void Die()
@@ -80,6 +81,7 @@ public class PlayerController : MonoBehaviour
 
             sound.clip = ded;
             sound.Play();
+
             while(transform.rotation.eulerAngles.z < 90)
             {
                 transform.localRotation = Quaternion.Lerp(Quaternion.Euler(transform.rotation.eulerAngles), Quaternion.Euler(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, 100), 0.1f * Time.deltaTime);
@@ -93,6 +95,8 @@ public class PlayerController : MonoBehaviour
             int index = Random.Range(0, deathStrings.Length - 1);
             deathText.text = deathStrings[index];
             deathPanel.SetActive(true);
+
+            StartCoroutine(LoadNextScene());
         }
     }
 
@@ -126,7 +130,7 @@ public class PlayerController : MonoBehaviour
             else
             {
                 navMeshObstacle.size = objManager.objects[objManager.selected].GetComponent<Collider>().bounds.size;
-                navMeshObstacle.carving = true;
+                //navMeshObstacle.carving = true;
 
                 if (!lerping)
                 {
@@ -168,7 +172,7 @@ public class PlayerController : MonoBehaviour
 
                         GetComponent<MeshRenderer>().enabled = true;
 
-                        navMeshObstacle.carving = false;
+                        //navMeshObstacle.carving = false;
 
                         shapeShifted = false;
 
@@ -268,5 +272,13 @@ public class PlayerController : MonoBehaviour
             float yMin = (Screen.height / 2) - (crossHair.height / 2);
             GUI.DrawTexture(new Rect(xMin, yMin, crossHair.width, crossHair.height), crossHair);
         }
+    }
+
+    IEnumerator LoadNextScene()
+    {
+        yield return new WaitForSeconds(2.0f);
+        transitionPanel.SetActive(true);
+        yield return new WaitForSeconds(2.0f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 }
