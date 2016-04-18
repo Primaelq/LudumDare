@@ -108,11 +108,12 @@ public class AI : MonoBehaviour
     {
         navMeshAgent.speed = 2.0f;
 
-        navMeshAgent.SetDestination(patrolPoints[currentTarget].position);
+        Debug.Log("Enemy name: " + gameObject.name + " and distance: " + Vector3.Distance(transform.position, patrolPoints[currentTarget].position));
 
-        if(Vector3.Distance(transform.position, patrolPoints[currentTarget].position) < 0.25f || navMeshAgent.velocity == Vector3.zero)
+        if (Vector3.Distance(transform.position, patrolPoints[currentTarget].position) < 4)
         {
-            if(currentTarget == patrolPoints.Length - 1)
+            Debug.Log(gameObject.name + " - distance - " + Vector3.Distance(transform.position, patrolPoints[currentTarget].position));
+            if(currentTarget >= patrolPoints.Length - 1)
             {
                 currentTarget = 0;
             }
@@ -121,6 +122,7 @@ public class AI : MonoBehaviour
                 currentTarget++;
             }
         }
+        navMeshAgent.SetDestination(patrolPoints[currentTarget].position);
     }
 
     void Chase()
