@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -330,6 +330,12 @@ public class AI : MonoBehaviour
                         playerInSight = true;
                         state = State.Idle;
                     }
+                  
+                    if(hit.collider.gameObject.tag == "FurnitureShape")
+                    {
+                        // Add something here to make the enemy react. -------------------------
+                        WaitBeforeReturnPatrol(2.0f);
+                    }
                 }
             }
         }
@@ -347,6 +353,12 @@ public class AI : MonoBehaviour
     {
         yield return new WaitForSeconds(waitTime);
         state = State.Chase;
+    }
+  
+  IEnumerator WaitBeforeReturnPatrol(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        ReturnPatrol();
     }
 
     public void TryToKillPlayer()
