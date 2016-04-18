@@ -25,8 +25,13 @@ public class ObjectsManager : MonoBehaviour
     private int nbObjects = 0;
 
     public GameObject tempShape;
-    
-	void Start ()
+
+    public AudioSource playerSoundsrc;
+    public AudioClip becomeFurnitureSound;
+    public AudioClip becomeHumanSound;
+
+
+    void Start ()
     {
         objectsDisplay = new List<Transform>();
 
@@ -70,20 +75,17 @@ public class ObjectsManager : MonoBehaviour
                 if (objects[selected] != null)
                 {
                     Transform tempTransform = GameObject.FindGameObjectWithTag("Player").transform;
-                    Debug.Log(objects[selected].name+"1");
                     Vector3 tempPosition = tempTransform.position + objects[selected].transform.GetComponent<Furniture>().positionModifier;
-                    Debug.Log(objects[selected].name + "2");
                     tempTransform.GetComponent<MeshRenderer>().enabled = false;
-                    Debug.Log(objects[selected].name + "3");
                     Quaternion rotation = Quaternion.Euler(objects[selected].transform.GetComponent<Furniture>().rotationModifier.x, GameObject.FindGameObjectWithTag("Player").transform.rotation.eulerAngles.y, objects[selected].transform.GetComponent<Furniture>().rotationModifier.z);
-                    Debug.Log(objects[selected].name + "4");
                     GameObject.FindGameObjectWithTag("Player").transform.tag = "FurnitureShape";
-                    Debug.Log(objects[selected].name + "5");
                     //tempShape.SetActive(true);
                     tempShape = Instantiate(objects[selected], tempPosition, rotation) as GameObject;
                     tempShape.tag = "fml";
-                    Debug.Log(objects[selected].name + "6");
                     tempTransform.GetComponent<PlayerController>().shapeShifted = true;
+                    //SOUND
+                    playerSoundsrc.clip = becomeFurnitureSound;
+                    playerSoundsrc.Play();
                 }
                 else
                     Debug.Log("Object null");
@@ -116,6 +118,8 @@ public class ObjectsManager : MonoBehaviour
             tempShape = null;
             Debug.Log(objects[selected] == null);
             // tempShape = new GameObject();
+            playerSoundsrc.clip = becomeHumanSound;
+            playerSoundsrc.Play();
         }
     }
 

@@ -35,6 +35,12 @@ public class AI : MonoBehaviour
 
     private float timer = 0.0f;
 
+    public float giveUpChaseDistance;
+
+    public float hitDistance;
+
+    private Animator anim;
+
     Mesh viewMesh;
     
 	void Start ()
@@ -48,10 +54,20 @@ public class AI : MonoBehaviour
         viewMesh = new Mesh();
         viewMesh.name = "View Mesh";
         viewMeshFilter.mesh = viewMesh;
+        anim = GetComponentInChildren<Animator>();
+
 	}
 	
 	void Update ()
     {
+        anim.SetFloat("Speed", navMeshAgent.speed);
+
+        if (playerInSight && state == State.Chase && Vector3.Distance(navMeshAgent.destination, transform.position) < hitDistance)
+        {
+            anim.SetTrigger("Punch");
+            TryToKillPlayer();
+        }
+
         if(GameObject.FindGameObjectWithTag("Player") != null && !GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().openingSafe)
         {
             switch (state)
@@ -87,6 +103,7 @@ public class AI : MonoBehaviour
         }
     }
 
+
     void Patrol()
     {
         navMeshAgent.speed = 2.0f;
@@ -113,7 +130,7 @@ public class AI : MonoBehaviour
             timer = Time.time;
         }
 
-        if(Time.time - timer < endurance)
+        if(Time.time - timer < endurance || (Vector3.Distance(GameObject.FindWithTag("Player").transform.position, transform.position) < giveUpChaseDistance))
         {
             navMeshAgent.speed = runSpeed;
 
@@ -132,11 +149,13 @@ public class AI : MonoBehaviour
                 Time.timeScale = 0.0f;
             }
         }
-        else
+        else 
         {
             ReturnToPatrol();
             timer = 0.0f;
         }
+
+       // if(Vector3.Distance())
     }
 
     void ReturnToPatrol()
@@ -328,5 +347,16 @@ public class AI : MonoBehaviour
     {
         yield return new WaitForSeconds(waitTime);
         state = State.Chase;
+    }
+
+    public void TryToKillPlayer()
+    {
+        if(GetComponentInChildren<CheckKillPlayer>().playerInRange)
+        {
+            Debug.Log("Ded");
+            GameObject g = GameObject.FindWithTag("Player");
+            if(g!=null)
+                g.SendMessage("Die");
+        }
     }
 }

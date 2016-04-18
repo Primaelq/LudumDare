@@ -24,6 +24,10 @@ public class PlayerController : MonoBehaviour
 
     public string password;
 
+    public AudioClip selectFurniture;
+    public AudioClip ded;
+    private AudioSource sound;
+
     private Vector3 movement;
 
     private float xRotation = 0.0f;
@@ -41,9 +45,15 @@ public class PlayerController : MonoBehaviour
 
     private NavMeshObstacle navMeshObstacle;
 
+    private bool dead;
+
 	void Start ()
     {
         //safePanel.SetActive(false);
+
+        dead = false;
+
+        sound = GetComponent<AudioSource>();
 
 		originalCamPosition = Camera.main.transform.localPosition;
 
@@ -54,6 +64,22 @@ public class PlayerController : MonoBehaviour
         navMeshObstacle = GetComponent<NavMeshObstacle>();
     }
 	
+    public void Die()
+    {
+        if (!dead)
+        {
+            sound.clip = ded;
+            sound.Play();
+            transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, 90);
+            this.enabled = false;
+            dead = true;
+            objManager.activated = false;
+            gameObject.tag = "fml";
+
+        }
+
+    }
+
 	void Update ()
     {
         if(!openingSafe)
@@ -149,8 +175,13 @@ public class PlayerController : MonoBehaviour
                 if (Input.GetMouseButtonDown(0))
                 {
                     Furniture furn = hit.transform.GetComponent<Furniture>().AddFurniture();
-                    if (furn != null) 
+                    if (furn != null)
+                    {
                         objManager.AddObject(furn.model, furn.icon);
+                        sound.clip = selectFurniture;
+                        sound.Play();
+
+                    }
                 }
             }
 
