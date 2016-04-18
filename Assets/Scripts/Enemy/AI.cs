@@ -27,6 +27,10 @@ public class AI : MonoBehaviour
 
     public MeshFilter viewMeshFilter;
 
+    public AudioClip[] sounds;
+    public AudioClip[] sounds2;
+    private AudioSource sound;
+
     private int currentTarget = 0;
 
     private NavMeshAgent navMeshAgent;
@@ -50,6 +54,8 @@ public class AI : MonoBehaviour
         navMeshAgent = GetComponent<NavMeshAgent>();
 
         distCollider = GetComponent<SphereCollider>();
+
+        sound = GetComponent<AudioSource>();
 
         viewMesh = new Mesh();
         viewMesh.name = "View Mesh";
@@ -327,13 +333,18 @@ public class AI : MonoBehaviour
                 {
                     if(hit.collider.gameObject.tag == "Player")
                     {
+                        sound.clip = sounds[(int)Random.Range(0, sounds.Length - 1)];
+                        sound.Play();
+
                         playerInSight = true;
                         state = State.Idle;
                     }
                   
                     if(hit.collider.gameObject.tag == "FurnitureShape")
                     {
-                        // Add something here to make the enemy react. -------------------------
+                        sound.clip = sounds2[(int)Random.Range(0, sounds2.Length - 1)];
+                        sound.Play();
+
                         WaitBeforeReturnPatrol(2.0f);
                     }
                 }
@@ -365,7 +376,7 @@ public class AI : MonoBehaviour
     {
         if(GetComponentInChildren<CheckKillPlayer>().playerInRange)
         {
-            Debug.Log("Ded");
+            //Debug.Log("Ded");
             GameObject g = GameObject.FindWithTag("Player");
             if(g!=null)
                 g.SendMessage("Die");
