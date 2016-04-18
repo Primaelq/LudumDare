@@ -358,7 +358,7 @@ public class AI : MonoBehaviour
   IEnumerator WaitBeforeReturnPatrol(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        ReturnPatrol();
+        ReturnToPatrol();
     }
 
     public void TryToKillPlayer()

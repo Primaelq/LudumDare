@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class DeathMenu : MonoBehaviour
@@ -20,14 +20,14 @@ public class DeathMenu : MonoBehaviour
     {
         if(dead)
         {
-            int index = Random(0, deathString.length - 1);
+            int index = Random.Range(0, deathStrings.Length - 1);
             
-            deathText = deathString[index];
+            deathText.text = deathStrings[index];
         }
     }
     
-    public void SwitchScene(int sceneIndex)
+    public void SwitchScene(string sceneName)
     {
-        Application.loadLevel(sceneIndex);
+        SceneManager.LoadScene(sceneName);
     }
 }
