@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour
@@ -15,7 +16,9 @@ public class PlayerController : MonoBehaviour
 
     public bool shapeShifted = false;
 
-    public GameObject objectsPanel, safePanel;
+    public GameObject objectsPanel, safePanel, deathPanel;
+
+    public string[] deathStrings;
 
     public Vector3 thirdPersonViewPos;
     public Vector3 thirdPersonViewRot;
@@ -47,7 +50,9 @@ public class PlayerController : MonoBehaviour
 
     private bool dead;
 
-	void Start ()
+    private Text deathText;
+
+    void Start ()
     {
         //safePanel.SetActive(false);
 
@@ -62,22 +67,33 @@ public class PlayerController : MonoBehaviour
         objManager = objectsPanel.GetComponent<ObjectsManager>();
 
         navMeshObstacle = GetComponent<NavMeshObstacle>();
+
+        deathText = deathPanel.transform.GetChild(0).GetComponent<Text>();
+        deathPanel.SetActive(false);
     }
 	
     public void Die()
     {
         if (!dead)
         {
+            Cursor.visible = true;
+
             sound.clip = ded;
             sound.Play();
-            transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, 90);
+            while(transform.rotation.eulerAngles.z < 90)
+            {
+                transform.localRotation = Quaternion.Lerp(Quaternion.Euler(transform.rotation.eulerAngles), Quaternion.Euler(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y, 100), 0.1f * Time.deltaTime);
+            }
+
             this.enabled = false;
             dead = true;
             objManager.activated = false;
             gameObject.tag = "fml";
 
+            int index = Random.Range(0, deathStrings.Length - 1);
+            deathText.text = deathStrings[index];
+            deathPanel.SetActive(true);
         }
-
     }
 
 	void Update ()
@@ -152,6 +168,8 @@ public class PlayerController : MonoBehaviour
 
                         GetComponent<MeshRenderer>().enabled = true;
 
+                        navMeshObstacle.carving = false;
+
                         shapeShifted = false;
 
                         lerping = false;
@@ -222,6 +240,19 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void loadScene(string sceneName)
+    {
+        if(sceneName == "Current")
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        else
+        {
+            SceneManager.LoadScene(sceneName);
+        }
+
+    }
+
     public void Exit()
     {
         openingSafe = false;
@@ -231,7 +262,7 @@ public class PlayerController : MonoBehaviour
 
     void OnGUI()
     {
-        if(!openingSafe)
+        if(!openingSafe || !dead)
         {
             float xMin = (Screen.width / 2) - (crossHair.width / 2);
             float yMin = (Screen.height / 2) - (crossHair.height / 2);
