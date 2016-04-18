@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 174fbc8fb40ba9b439f62674f9097f2e
-timeCreated: 1460980692
+guid: d077fbdab2734634b909b0101e2a87fd
+timeCreated: 1460995774
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -9,7 +9,7 @@ ModelImporter:
     400000: //RootNode
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Cube
+    4300000: Fridge
   materials:
     importMaterials: 1
     materialName: 0
