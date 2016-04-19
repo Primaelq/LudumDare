@@ -102,10 +102,12 @@ public class ObjectsManager : MonoBehaviour
             if(activated)
             {
                 activated = false;
+                Cursor.visible = false;
             }
             else
             {
                 activated = true;
+                Cursor.visible = false;
             }
         }
 

@@ -114,8 +114,6 @@ public class AI : MonoBehaviour
     {
         navMeshAgent.speed = 2.0f;
 
-        Debug.Log("Enemy name: " + gameObject.name + " and distance: " + Vector3.Distance(transform.position, patrolPoints[currentTarget].position));
-
         if (Vector3.Distance(transform.position, patrolPoints[currentTarget].position) < 4)
         {
             Debug.Log(gameObject.name + " - distance - " + Vector3.Distance(transform.position, patrolPoints[currentTarget].position));
