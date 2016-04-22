@@ -12,6 +12,8 @@ public class ObjectsManager : MonoBehaviour
     public Sprite openHandle;
     public Sprite closeHandle;
 
+    public Color dark;
+
     [HideInInspector]
     public int selected = 0;
     
@@ -171,7 +173,7 @@ public class ObjectsManager : MonoBehaviour
         {
             if (i != index)
             {
-                list[i].GetComponent<Image>().color = Color.black;
+                list[i].GetComponent<Image>().color = dark;
             }
             else
             {
